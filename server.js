@@ -47,6 +47,28 @@ app.post('/shopping-list', jsonParser, (req, res) => {
   res.status(201).json(item);
 });
 
+// when trying to post to the endpoint /recipes... 
+app.post('/recipes', jsonParser, (req, res) => {
+  // set the required fields for the recipe to name, and ingredients. So the recipe must have these keys
+  const requiredFields = ['name', 'ingredients'];
+  // set up a for loop so it iterates through the list of required fields
+  for (let i=0; i < requiredFields.length; i++) {
+    // set the field we are checking equal to the current index item in our requiredFields array
+    const field = requiredFields[i];
+    // if the field is not in the req.body
+    if (!(field in req.body)) {
+      // we set up and send an error message, as well as log it
+      const message = `Missing \`${field}\` in request body`;
+      console.error(message);
+      return res.status(400).send(message);
+    }
+  }
+
+  // If no error was sent by now, then we are good to go and we can use the create method and send our response
+  const item = Recipes.create(req.body.name, req.body.ingredients);
+  res.status(201).json(item);
+})
+
 
 app.get('/recipes', (req, res) => {
   res.json(Recipes.get());
